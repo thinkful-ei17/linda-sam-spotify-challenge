@@ -25,7 +25,6 @@ const getFromApi = function (endpoint, query = {}) {
 };
 
 let artist;
-let concurrentTopTracks = [];
 
 const getArtist = function (name) {
   let query = {
@@ -40,27 +39,20 @@ const getArtist = function (name) {
     })
     .then( (item) => { 
       artist.related = item.artists;
+      let concurrentTopTracks = [];
       for (let i=0; i < artist.related.length; i++) {
-        concurrentTopTracks.push(getFromApi(`artists/${artist.related[i].id}/top-tracks`));
+        concurrentTopTracks.push(getFromApi(`artists/${artist.related[i].id}/top-tracks?country=US`));
       }
-      console.log('what is concurrentTopTracks',concurrentTopTracks);
-      return Promise.all(concurrentTopTracks) //a promise that resolves with an array of results from previous promises
+      return Promise.all(concurrentTopTracks); //a promise that resolves with an array of results from previous promises
     })
-    // .then( (items)) => {
-    //   artist. = item.tracks
-
-    // }     
-    // .then( (item) => {
-      
-    //   console.log('what is item after related artists', item);
-
-    // })
+    .then( (items) => {
+      for (let i=0; i<items.length; i++){
+        artist.related[i].tracks = items[i].tracks;
+      }
+      return artist;
+    })
     .catch(error => console.log(`Whoops! Something went wrong. We had the following error: ${error}`));
 };
-
-// Promise.all(concurrentTopTracks).then(results => {
-//   return artists.
-// })
 
 getArtist();
 
