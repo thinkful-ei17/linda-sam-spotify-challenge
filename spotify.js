@@ -41,7 +41,7 @@ const getArtist = function (name) {
       artist.related = item.artists;
       let concurrentTopTracks = [];
       for (let i=0; i < artist.related.length; i++) {
-        concurrentTopTracks.push(getFromApi(`artists/${artist.related[i].id}/top-tracks?country=US`));
+        concurrentTopTracks.push(getFromApi(`artists/${artist.related[i].id}/top-tracks`, { country : 'US' }));
       }
       return Promise.all(concurrentTopTracks); //a promise that resolves with an array of results from previous promises
     })
