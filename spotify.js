@@ -1,3 +1,5 @@
+'use strict';
+
 const CLIENT_ID = 'eb6dfffda5534bb5996e872487be4321';
 
 const getFromApi = function (endpoint, query = {}) {
@@ -25,9 +27,21 @@ const getFromApi = function (endpoint, query = {}) {
 let artist;
 
 const getArtist = function (name) {
-  // Edit me!
-  // (Plan to call `getFromApi()` several times over the whole exercise from here!)
+  console.log(`I know you entered ${name}`);
+  let query = {
+    q: name,
+    limit: 1,
+    type: 'artist'
+  };
+  return getFromApi('searching', query)
+    .then( (item) => {
+      artist = item.artists.items[0];
+      return artist;
+    })
+    .catch(error => console.log(`Whoops! Something went wrong. We had the following error: ${error}`));
 };
+
+getArtist(artist);
 
 
 
