@@ -25,23 +25,44 @@ const getFromApi = function (endpoint, query = {}) {
 };
 
 let artist;
+let concurrentTopTracks = [];
 
 const getArtist = function (name) {
-  console.log(`I know you entered ${name}`);
   let query = {
     q: name,
     limit: 1,
     type: 'artist'
   };
-  return getFromApi('searching', query)
+  return getFromApi('search', query)
     .then( (item) => {
       artist = item.artists.items[0];
-      return artist;
+      return getFromApi(`artists/${artist.id}/related-artists`);
     })
+    .then( (item) => { 
+      artist.related = item.artists;
+      for (let i=0; i < artist.related.length; i++) {
+        concurrentTopTracks.push(getFromApi(`artists/${artist.related[i].id}/top-tracks`));
+      }
+      console.log('what is concurrentTopTracks',concurrentTopTracks);
+      return Promise.all(concurrentTopTracks) //a promise that resolves with an array of results from previous promises
+    })
+    // .then( (items)) => {
+    //   artist. = item.tracks
+
+    // }     
+    // .then( (item) => {
+      
+    //   console.log('what is item after related artists', item);
+
+    // })
     .catch(error => console.log(`Whoops! Something went wrong. We had the following error: ${error}`));
 };
 
-getArtist(artist);
+// Promise.all(concurrentTopTracks).then(results => {
+//   return artists.
+// })
+
+getArtist();
 
 
 
